@@ -1,0 +1,20 @@
+{
+  "name": "playwright-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.7.5"
+  },
+  "dependencies": {
+    "@cliqz/adblocker-playwright": "^1.33.2",
+    "cross-fetch": "^4.0.0",
+    "dotenv": "^16.4.5",
+    "fetch": "^1.1.0"
+  }
+}
