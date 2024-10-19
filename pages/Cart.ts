@@ -1,9 +1,9 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
 
 export class Cart extends PageBase {
-    private _checkoutButton = "//a[contains(@class,'check_out')]";
-    private _cartEmpty = "//span[@id='empty_cart']";
+    private _checkoutButton: Locator;
+    private _cartEmpty: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -14,12 +14,12 @@ export class Cart extends PageBase {
     }
 
     async checkout() {
-        await this.page.click(this._checkoutButton);
+        await this._checkoutButton.click();
         return this;
     }
 
     async cartIsEmpty() {
-        return await this.page.isVisible(this._cartEmpty);
+        return await this._cartEmpty.isVisible();
     }
 
     async getProductCategoryByName(product: string) {

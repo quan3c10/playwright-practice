@@ -1,9 +1,10 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
 
 export class DashBoard extends PageBase {
 
-    private _loggedUser = "//a[contains(text(),'Logged in as')]";
+    private _loggedLabel: Locator;
+    private _searchInput: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -11,15 +12,18 @@ export class DashBoard extends PageBase {
         this.url = "https://automationexercise.com/";
         this.title = "Automation Exercise";
         this.logo = "//div[contains(@class,'logo')]";
+
+        this._loggedLabel = page.getByRole('link').filter({hasText: 'Logged in as'});
+        this._searchInput = page.locator("//input[@id='search-field']");
     }
 
     async searchProduct(product: string) {
-        await this.page.fill("//input[@id='search-field']", product);
+        this._searchInput.fill(product);
         await this.page.keyboard.press('Enter');
         return this;
     }
 
     async isLoggedIn() {
-        return this.page.isVisible(this._loggedUser);
+        return this._loggedLabel.isVisible();
     }
 }
