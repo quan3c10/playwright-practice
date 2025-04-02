@@ -2,31 +2,31 @@ import { Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
 
 export class Products extends PageBase {
-    private _searchField: Locator;
-    private _searchButton: Locator;
-    private _cardModal: Locator;
-    private _viewCardLink: Locator;
-    private _continueShoppingButton: Locator;
+    searchField: Locator;
+    searchButton: Locator;
+    cardModal: Locator;
+    viewCardLink: Locator;
+    continueShoppingButton: Locator;
 
     constructor(page: Page) {
         super(page);
 
-        this.url = "https://automationexercise.com/products";
+        this.url = "/products";
         this.title = "Automation Exercise - All Products";
         this.logo = "//div[contains(@class,'logo']";
 
-        this._searchField = page.locator("//button[@id='search_product']");
-        this._searchButton = page.locator("//button[@id='submit_search']");
-        this._cardModal = page.locator("//div[@id='cartModal']");
-        this._viewCardLink = page.locator("//u[text()='View Cart']");
-        this._continueShoppingButton = page.locator(
+        this.searchField = page.getByTestId("search_product");
+        this.searchButton = page.getByTestId("submit_search");
+        this.cardModal = page.getByTestId("cartModal");
+        this.viewCardLink = page.locator("//u[text()='View Cart']");
+        this.continueShoppingButton = page.locator(
             "//button[text()='Continue Shopping']",
         );
     }
 
     async searchProduct(product: string) {
-        await this._searchField.fill( product);
-        await this._searchButton.click();
+        await this.searchField.fill( product);
+        await this.searchButton.click();
         return this;
     }
 
@@ -67,12 +67,12 @@ export class Products extends PageBase {
     }
 
     async cartModalIsVisible() {
-        return await this._cardModal.isVisible();
+        return await this.cardModal.isVisible();
     }
 
     async viewCart() {
         if (await this.cartModalIsVisible()) {
-            this._viewCardLink.click();
+            this.viewCardLink.click();
             return this;
         } else {
             throw new Error("Card modal is not visible");
@@ -81,7 +81,7 @@ export class Products extends PageBase {
 
     async continueShopping() {
         if (await this.cartModalIsVisible()) {
-            this._continueShoppingButton.click();
+            this.continueShoppingButton.click();
             return this;
         } else {
             throw new Error("Card modal is not visible");

@@ -1,25 +1,25 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
 
 export class Cart extends PageBase {
-    private _checkoutButton: Locator;
-    private _cartEmpty: Locator;
+    checkoutButton: Locator;
+    cartEmpty: Locator;
 
     constructor(page: Page) {
         super(page);
 
-        this.url = "https://automationexercise.com/view_cart";
+        this.url = "/view_cart";
         this.title = "Automation Exercise - Checkout";
         this.logo = "//div[contains(@class,'logo')]";
     }
 
     async checkout() {
-        await this._checkoutButton.click();
+        await this.checkoutButton.click();
         return this;
     }
 
     async cartIsEmpty() {
-        return await this._cartEmpty.isVisible();
+        return await this.cartEmpty.isVisible();
     }
 
     async getProductCategoryByName(product: string) {

@@ -3,10 +3,10 @@ import { PlaywrightBlocker } from "@cliqz/adblocker-playwright";
 import fetch from "cross-fetch";
 
 export class PageBase {
-    private _page: Page;
     private _url: string;
     private _title: string;
     private _logo: string;
+    page: Page;
 
     public get logo(): string {
         return this._logo;
@@ -15,12 +15,6 @@ export class PageBase {
         this._logo = value;
     }
 
-    public get page(): Page {
-        return this._page;
-    }
-    public set page(value: Page) {
-        this._page = value;
-    }
     public get url(): string {
         return this._url;
     }
