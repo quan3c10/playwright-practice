@@ -80,10 +80,6 @@ export class Products extends PageBase {
         return this;
     }
 
-    async cartModalIsVisible() {
-        return await this.cardModal.isVisible();
-    }
-
     async viewCart() {
         await expect(this.cardModal).toBeVisible();
         await this.viewCartBtn.click();
