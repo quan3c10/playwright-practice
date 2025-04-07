@@ -36,8 +36,9 @@ export class PageBase {
         });
     }
 
-    async open() {
-        await this.page.goto(this.url);
+    async open(path?: string) {
+        const fullPath = path ? this.url + path : this.url;
+        await this.page.goto(fullPath);
         return this;
     }
 

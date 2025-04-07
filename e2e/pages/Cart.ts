@@ -1,9 +1,11 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
+import { Product } from "../data/types";
 
 export class Cart extends PageBase {
     checkoutButton: Locator;
     cartEmpty: Locator;
+    cartList: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -11,6 +13,12 @@ export class Cart extends PageBase {
         this.url = "/view_cart";
         this.title = "Automation Exercise - Checkout";
         this.logo = "//div[contains(@class,'logo')]";
+        this.cartEmpty = page.getByTestId("#empty_cart");
+        this.cartList = page.locator("#cart_list");
+        this.checkoutButton = page.locator(
+            "#cart_items",
+            { hasText: "Proceed To Checkout" }
+        );
     }
 
     async checkout() {
@@ -24,9 +32,8 @@ export class Cart extends PageBase {
 
     async getProductCategoryByName(product: string) {
         if (!await this.cartIsEmpty()) {
-            const category = await this.page.getAttribute(
-                `//a[text()='${product}']//ancestor::tr//td[@class="cart_description"]/p`,
-                "text",
+            const category = await this.page.textContent(
+                `//a[text()='${product}']//ancestor::tr//td[@class="cart_description"]/p`
             );
             if (category) {
                 return category;
@@ -36,9 +43,8 @@ export class Cart extends PageBase {
 
     async getPriceByName(product: string) {
         if (!await this.cartIsEmpty()) {
-            const price = await this.page.getAttribute(
-                `//a[text()='${product}']//ancestor::tr//td[@class="cart_price"]/p`,
-                "text",
+            const price = await this.page.textContent(
+                `//a[text()='${product}']//ancestor::tr//td[@class="cart_price"]/p`
             );
             if (price) {
                 return price;
@@ -48,9 +54,8 @@ export class Cart extends PageBase {
 
     async getQuantityByName(product: string) {
         if (!await this.cartIsEmpty()) {
-            const quantity = await this.page.getAttribute(
-                `//a[text()='${product}']//ancestor::tr//td[@class="cart_quantity"]/button`,
-                "text",
+            const quantity = await this.page.textContent(
+                `//a[text()='${product}']//ancestor::tr//td[@class="cart_quantity"]/button`
             );
             if (quantity) {
                 return quantity;
@@ -60,9 +65,8 @@ export class Cart extends PageBase {
 
     async getTotalPriceByName(product: string) {
         if (!await this.cartIsEmpty()) {
-            const totalPrice = await this.page.getAttribute(
-                `//a[text()='${product}']//ancestor::tr//td[@class="cart_total"]/p`,
-                "text",
+            const totalPrice = await this.page.textContent(
+                `//a[text()='${product}']//ancestor::tr//td[@class="cart_total"]/p`
             );
             if (totalPrice) {
                 return totalPrice;
@@ -81,9 +85,8 @@ export class Cart extends PageBase {
 
     async getProductNameById(productId: string) {
         if (!await this.cartIsEmpty()) {
-            const name = await this.page.getAttribute(
-                `//tr[@id="product-${productId}"]//td[@class="cart_description"]//a`,
-                "text",
+            const name = await this.page.textContent(
+                `//tr[@id="product-${productId}"]//td[@class="cart_description"]//a`
             );
             if (name) {
                 return name;
@@ -93,9 +96,8 @@ export class Cart extends PageBase {
 
     async getProductCategoryById(productId: string) {
         if (!await this.cartIsEmpty()) {
-            const category = await this.page.getAttribute(
-                `//tr[@id="product-${productId}"]//td[@class="cart_description"]/p`,
-                "text",
+            const category = await this.page.textContent(
+                `//tr[@id="product-${productId}"]//td[@class="cart_description"]/p`
             );
             if (category) {
                 return category;
@@ -105,9 +107,8 @@ export class Cart extends PageBase {
 
     async getPriceById(productId: string) {
         if (!await this.cartIsEmpty()) {
-            const price = await this.page.getAttribute(
-                `//tr[@id="product-${productId}"]//td[@class="cart_price"]/p`,
-                "text",
+            const price = await this.page.textContent(
+                `//tr[@id="product-${productId}"]//td[@class="cart_price"]/p`
             );
             if (price) {
                 return price;
@@ -117,9 +118,8 @@ export class Cart extends PageBase {
 
     async getQuantityById(productId: string) {
         if (!await this.cartIsEmpty()) {
-            const quantity = await this.page.getAttribute(
-                `//tr[@id="product-${productId}"]//td[@class="cart_quantity"]/button`,
-                "text",
+            const quantity = await this.page.textContent(
+                `//tr[@id="product-${productId}"]//td[@class="cart_quantity"]/button`
             );
             if (quantity) {
                 return quantity;
@@ -129,9 +129,8 @@ export class Cart extends PageBase {
 
     async getTotalPriceById(productId: string) {
         if (!await this.cartIsEmpty()) {
-            const totalPrice = await this.page.getAttribute(
-                `//tr[@id="product-${productId}"]//td[@class="cart_total"]/p`,
-                "text",
+            const totalPrice = await this.page.textContent(
+                `//tr[@id="product-${productId}"]//td[@class="cart_total"]/p`
             );
             if (totalPrice) {
                 return totalPrice;
@@ -146,5 +145,12 @@ export class Cart extends PageBase {
             );
             return this;
         } else throw new Error("Cart is empty");
+    }
+
+    async verifyProductInfomation(product: Product) {
+        expect(await this.getProductCategoryByName(product.name)).toEqual(product.category);
+        expect(await this.getPriceByName(product.name)).toEqual(`Rs. ${product.price}`);
+        expect(await this.getQuantityByName(product.name)).toEqual(`${product.quantity}`);
+        expect(await this.getTotalPriceByName(product.name)).toEqual(`Rs. ${product.price * product.quantity}`);
     }
 }

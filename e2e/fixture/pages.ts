@@ -1,32 +1,34 @@
-import { DashBoard } from "../pages/DashBoard";
 import { Cart } from "../pages/Cart";
-import { Checkout } from "../pages/Checkout";
 import { Login } from "../pages/Login";
 import { Products } from "../pages/Products";
+import { ProductDetails } from "../pages/ProductDetails";
 import {default as base} from '@playwright/test';
 
 type PageManager = {
-    dashBoardPage: DashBoard;
     cartPage: Cart;
     loginPage: Login;
-    checkoutPage: Checkout;
     productPage: Products;
+    productDetailsPage: ProductDetails;
 }
 
 export const test = base.extend<PageManager>({
-    dashBoardPage: async ({ page }, use) => {
-        await use(new DashBoard(page));
-    },
     cartPage: async ({ page }, use) => {
         await use(new Cart(page));
     },
     loginPage: async ({ page }, use) => {
         await use(new Login(page));
     },
-    checkoutPage: async ({ page }, use) => {
-        await use(new Checkout(page));
-    },
     productPage: async ({ page }, use) => {
         await use(new Products(page));
+    },
+    productDetailsPage: async ({ page }, use) => {
+        await use(new ProductDetails(page));
     }
 });
+
+export const beforeEach = test.beforeEach;
+export const beforeAll = test.beforeAll;
+export const afterEach = test.afterEach;
+export const afterAll = test.afterAll;
+export const use = test.use;
+export const step = test.step;

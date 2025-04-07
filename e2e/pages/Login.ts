@@ -2,8 +2,8 @@ import { Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
 
 export class Login extends PageBase {
-    private _defaultUsername = "sqakfs@gamil.com";
-    private _defaultPassword = "1111";
+    private _defaultUsername = "quanuh@gamil.com";
+    private _defaultPassword = "12345678";
     usernameTxt: Locator;
     passwordTxt: Locator;
     loginButton: Locator;
@@ -15,7 +15,7 @@ export class Login extends PageBase {
         this.title = "Automation Exercise - Signup / Login";
         this.logo = "//div[contains(@class,'logo')]";
 
-        this.usernameTxt = this.page.locator("//input[@name='email']");
+        this.usernameTxt = this.page.locator("//input[@data-qa='login-email']");
         this.passwordTxt = this.page.locator("//input[@name='password']");
         this.loginButton = this.page.locator("//button[@data-qa='login-button']");
     }
