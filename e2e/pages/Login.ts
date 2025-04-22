@@ -2,7 +2,7 @@ import { Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
 
 export class Login extends PageBase {
-    private _defaultUsername = "quanuh@gamil.com";
+    private _defaultUsername = "quanuh@gmail.com";
     private _defaultPassword = "12345678";
     usernameTxt: Locator;
     passwordTxt: Locator;
@@ -28,6 +28,8 @@ export class Login extends PageBase {
     }
 
     async loginWithDefaultCredentials() {
+        
+
         await this.usernameTxt.fill(this._defaultUsername);
         await this.passwordTxt.fill(this._defaultPassword);
         await this.loginButton.click();

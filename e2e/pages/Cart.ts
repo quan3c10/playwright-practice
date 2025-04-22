@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
-import { Product } from "../data/types";
+import { Product } from "../models/ProductModels";
 
 export class Cart extends PageBase {
     checkoutButton: Locator;

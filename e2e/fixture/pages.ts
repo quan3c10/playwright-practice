@@ -2,6 +2,7 @@ import { Cart } from "../pages/Cart";
 import { Login } from "../pages/Login";
 import { Products } from "../pages/Products";
 import { ProductDetails } from "../pages/ProductDetails";
+import { Checkout } from "../pages/Checkout";
 import {default as base} from '@playwright/test';
 
 type PageManager = {
@@ -9,6 +10,7 @@ type PageManager = {
     loginPage: Login;
     productPage: Products;
     productDetailsPage: ProductDetails;
+    checkoutPage: Checkout;
 }
 
 export const test = base.extend<PageManager>({
@@ -23,6 +25,9 @@ export const test = base.extend<PageManager>({
     },
     productDetailsPage: async ({ page }, use) => {
         await use(new ProductDetails(page));
+    },
+    checkoutPage: async ({ page }, use) => {
+        await use(new Checkout(page));
     }
 });
 

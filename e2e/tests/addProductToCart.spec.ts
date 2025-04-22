@@ -1,10 +1,12 @@
 import { products } from '../data/Products'
+import { users } from '../data/Users'
 import { test, beforeEach, step } from '../fixture/pages';
 
 beforeEach(async ({ loginPage }) => {
   await step('Login with default credentials', async () => {
+    const user = users['quan.uh']
     await loginPage.open();
-    await loginPage.loginWithDefaultCredentials();
+    await loginPage.loginWith(user.email, user.password);
   }); 
 });
 
@@ -40,5 +42,29 @@ test('Verify adding multiple products to cart successfully', async ({ productPag
     await productDetailsPage.viewCart();
     await cartPage.verifyProductInfomation(product1);
     await cartPage.verifyProductInfomation(product2);
+  });
+});
+
+test('Verify checkout multiple products successfully', async ({ productPage, cartPage, checkoutPage }) => {
+  
+  const product1 = products['blue.top'];
+  const product2 = products['men.tshirt'];  
+
+  await test.step('Add products to cart', async () => {
+    await productPage.open();
+    await productPage.addToCart(product1.name);
+    await productPage.continueShopping();
+    await productPage.addToCart(product2.name, product2.quantity);
+  });
+
+  await test.step('Checkout the order', async () => {
+    await cartPage.open();
+    await cartPage.checkout();
+  });
+
+  await test.step('Verify products added to cart with correct information', async () => {
+    await checkoutPage.open();
+    const deliveryAddress = await checkoutPage.getDeliveryAddress();
+    const billingAddress = await checkoutPage.getBillingAddress();
   });
 });
