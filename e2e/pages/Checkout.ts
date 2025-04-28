@@ -1,8 +1,8 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
-import { Address, CheckoutProduct } from "../models/CheckoutModels";
-import { User } from "../models/UserModels";
-import { Product } from "../models/ProductModels";
+import { Address, CartProduct } from "../models/ui/CheckoutModels";
+import { User } from "../models/ui/UserModels";
+import { Product } from "../models/ui/ProductModels";
 
 export class Checkout extends PageBase {
     // Locators
@@ -101,7 +101,7 @@ export class Checkout extends PageBase {
      * @param index The index of the product (0-based)
      * @returns CheckoutProduct object with product details
      */
-    async getProductInfo(index: number): Promise<CheckoutProduct> {
+    async getProductInfo(index: number): Promise<CartProduct> {
         const productRow = this.productRows.nth(index);
         await expect(productRow).toBeVisible();
         
@@ -130,7 +130,7 @@ export class Checkout extends PageBase {
      * @param name The ID of the product
      * @returns CheckoutProduct object with product details
      */
-    async getProductByName(productName: string): Promise<CheckoutProduct> {
+    async getProductByName(productName: string): Promise<CartProduct> {
         const productRow = this.page.locator(`//a[contains(text(),"${productName}")]//ancestor::tr`);
         
         if (await productRow.count() === 0) {
@@ -142,7 +142,7 @@ export class Checkout extends PageBase {
         const id = (await productRow.getAttribute("id") || "").replace("product-", "");
         const name = await productRow.locator(".cart_description h4 a").textContent() || "";
         const category = await productRow.locator(".cart_description p").textContent() || "";
-        const price = await productRow.locator(".cart_price p").textContent() || "";
+        const price = (await productRow.locator(".cart_price p").textContent())?.split(" ")[1] || "";
         const quantity = await productRow.locator(".cart_quantity button").textContent() || "";
         const total = await productRow.locator(".cart_total p").textContent() || "";
         
@@ -162,9 +162,9 @@ export class Checkout extends PageBase {
     async verifyDeliveryAddress(user: User) {
         const deliveryAddress = await this.getDeliveryAddress();
 
-        expect(deliveryAddress.fullName).toContain(user.name);
-        expect(deliveryAddress.addressLines[0]).toContain(user.addressInfo.firstName);
-        expect(deliveryAddress.cityStatePostcode).toContain(user.addressInfo.city);
+        expect(deliveryAddress.fullName).toContain(`${user.title}. ${user.addressInfo.firstName} ${user.addressInfo.lastName}`);
+        expect(deliveryAddress.addressLines[0]).toContain(user.addressInfo.address1);
+        expect(deliveryAddress.cityStatePostcode).toContain(user.addressInfo.zipcode);
         expect(deliveryAddress.country).toContain(user.addressInfo.country);
         expect(deliveryAddress.phone).toContain(user.addressInfo.mobile);
 
@@ -174,9 +174,9 @@ export class Checkout extends PageBase {
     async verifyBillingAddress(user: User) {
         const billingAddress = await this.getBillingAddress();
 
-        expect(billingAddress.fullName).toContain(user.name);
-        expect(billingAddress.addressLines[0]).toContain(user.addressInfo.firstName);
-        expect(billingAddress.cityStatePostcode).toContain(user.addressInfo.city);
+        expect(billingAddress.fullName).toContain(`${user.title}. ${user.addressInfo.firstName} ${user.addressInfo.lastName}`);
+        expect(billingAddress.addressLines[0]).toContain(user.addressInfo.address1);
+        expect(billingAddress.cityStatePostcode).toContain(user.addressInfo.zipcode);
         expect(billingAddress.country).toContain(user.addressInfo.country);
         expect(billingAddress.phone).toContain(user.addressInfo.mobile);
 
@@ -188,7 +188,7 @@ export class Checkout extends PageBase {
 
         expect(productInfo.name).toEqual(product.name);
         expect(productInfo.category).toEqual(product.category);
-        expect(productInfo.price).toEqual(`Rs. ${product.price}`);
+        expect(productInfo.price).toEqual(product.price);
         expect(productInfo.quantity).toEqual(product.quantity);
         expect(productInfo.total).toEqual(`Rs. ${product.price * product.quantity}`);
 
@@ -199,8 +199,8 @@ export class Checkout extends PageBase {
      * Get all products in the checkout
      * @returns Array of CheckoutProduct objects
      */
-    async getAllProducts(): Promise<CheckoutProduct[]> {
-        const products: CheckoutProduct[] = [];
+    async getAllProducts(): Promise<CartProduct[]> {
+        const products: CartProduct[] = [];
         const count = await this.productRows.count();
         
         for (let i = 0; i < count; i++) {

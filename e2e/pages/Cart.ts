@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { PageBase } from "./PageBase";
-import { Product } from "../models/ProductModels";
+import { CartProduct } from "../models/ui/CheckoutModels";
+import { Product } from "../models/ui/ProductModels";
 
 export class Cart extends PageBase {
     checkoutButton: Locator;
@@ -14,7 +15,7 @@ export class Cart extends PageBase {
         this.title = "Automation Exercise - Checkout";
         this.logo = "//div[contains(@class,'logo')]";
         this.cartEmpty = page.getByTestId("#empty_cart");
-        this.cartList = page.locator("#cart_list");
+        this.cartList = page.locator("#cart_info_table");
         this.checkoutButton = page.locator(
             "#cart_items",
             { hasText: "Proceed To Checkout" }
@@ -28,6 +29,13 @@ export class Cart extends PageBase {
 
     async cartIsEmpty() {
         return await this.cartEmpty.isVisible();
+    }
+
+    async getCartQuantity() {
+        await this.page.goto(this.url);
+        if (!await this.cartIsEmpty()) {
+            return await this.page.locator("//tbody/tr").count();
+        } else return 0;
     }
 
     async getProductCategoryByName(product: string) {
@@ -72,6 +80,39 @@ export class Cart extends PageBase {
                 return totalPrice;
             } else throw new Error("Product total price blank or not found");
         } else throw new Error("Cart is empty");
+    }
+    /**
+        * Get product information by product ID
+        * @param name The ID of the product
+        * @returns CheckoutProduct object with product details
+        */
+    async getProductByName(productName: string): Promise<CartProduct> {
+        const productRow = this.page.locator(`//a[contains(text(),"${productName}")]//ancestor::tr`);
+
+        if (await productRow.count() === 0) {
+            console.log(`Product with name "${productName}" not found in the checkout.`);
+        }
+
+        await expect(productRow).toBeVisible();
+
+        const id = (await productRow.getAttribute("id") || "").replace("product-", "");
+        const name = await productRow.locator(".cart_description h4 a").textContent() || "";
+        const category = await productRow.locator(".cart_description p").textContent() || "";
+        const price = (await productRow.locator(".cart_price p").textContent())?.split(" ")[1] || "";
+        const quantity = await productRow.locator(".cart_quantity button").textContent() || "";
+        const total = await productRow.locator(".cart_total p").textContent() || "";
+
+        return {
+            id: Number(id),
+            name,
+            category,
+            price: Number(price),
+            quantity: Number(quantity),
+            availability: "",
+            condition: "",
+            brand: "",
+            total
+        };
     }
 
     async deleteItemByName(product: string) {
@@ -147,10 +188,15 @@ export class Cart extends PageBase {
         } else throw new Error("Cart is empty");
     }
 
-    async verifyProductInfomation(product: Product) {
-        expect(await this.getProductCategoryByName(product.name)).toEqual(product.category);
-        expect(await this.getPriceByName(product.name)).toEqual(`Rs. ${product.price}`);
-        expect(await this.getQuantityByName(product.name)).toEqual(`${product.quantity}`);
-        expect(await this.getTotalPriceByName(product.name)).toEqual(`Rs. ${product.price * product.quantity}`);
+    async verifyProductInfo(product: Product) {
+        const productInfo = await this.getProductByName(product.name);
+
+        await expect(productInfo.name).toEqual(product.name);
+        await expect(productInfo.category).toEqual(product.category);
+        await expect(productInfo.price).toEqual(product.price);
+        await expect(productInfo.quantity).toEqual(product.quantity);
+        await expect(productInfo.total).toEqual(`Rs. ${product.price * product.quantity}`);
+
+        return this;
     }
 }

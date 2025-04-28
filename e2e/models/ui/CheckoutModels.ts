@@ -6,9 +6,9 @@ export interface Address {
     phone: string;
 }
 
-import { Product } from './ProductModels'; // Adjust the path as needed
+import { Product } from '../ui/ProductModels'; // Adjust the path as needed
 
-export class CheckoutProduct implements Product {
+export class CartProduct implements Product {
     id: number;
     name: string;
     category: string;

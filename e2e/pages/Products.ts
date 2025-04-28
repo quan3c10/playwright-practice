@@ -108,11 +108,11 @@ export class Products extends PageBase {
         const addToCartButton = productCard.locator('.productinfo >> .add-to-cart');
         await expect(addToCartButton).toBeVisible();
         for (let i = 0; i < quantity; i++) {
+            console.log(`Adding ${quantity} of ${product} to cart...`);
             await addToCartButton.click();
+            await this.continueShopping();
         }
-
-        // Wait for the modal to appear
-        await expect(this.cardModal).toBeVisible();
+        
         return this;
     }
 
