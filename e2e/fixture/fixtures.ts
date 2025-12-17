@@ -43,8 +43,8 @@ export const test = base.extend<CombinedFixtures>({
     await use(service);
   },
 
-  cartService: async ({ apiClient }, use) => {
-    const service = new CartService(apiClient);
+  cartService: async ({ apiClient, page }, use) => {
+    const service = new CartService(apiClient, page);
     await use(service);
   },
   
